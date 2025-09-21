@@ -68,6 +68,8 @@ $aprendices = $controlador->index();
                 <td>
                     <a href="view/editar.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm">Actualizar</a>
                     <button class="btn btn-danger btn-sm" onclick="confirmarEliminar(<?= $row['id'] ?>)">Eliminar</button>
+                    <a href="view/ver.php?id=<?= $row['id'] ?>" class="btn btn-info btn-sm">Ver</a>
+
                 </td>
             </tr>
         <?php } ?>
