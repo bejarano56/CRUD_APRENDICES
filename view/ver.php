@@ -8,7 +8,6 @@ if (!$id) {
     die("ID de aprendiz no proporcionado");
 }
 
-// Obtener aprendiz
 $aprendiz = $controlador->show($id);
 if (!$aprendiz) {
     die("Aprendiz no encontrado");

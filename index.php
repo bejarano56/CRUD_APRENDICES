@@ -2,7 +2,6 @@
 require_once 'controller/aprendiz_controller.php';
 $controlador = new AprendizController();
 
-// Obtener lista de aprendices
 $aprendices = $controlador->index();
 ?>
 

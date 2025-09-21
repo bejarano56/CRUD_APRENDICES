@@ -11,13 +11,11 @@ $aprendiz = $controlador->show($id);
 
 if (!$aprendiz) die("Aprendiz no encontrado");
 
-// Traer datos para selects
 $conexion = conectarDB();
 $tipos = mysqli_query($conexion, "SELECT * FROM tipo_documento");
 $grupos = mysqli_query($conexion, "SELECT * FROM grupo_sanguineo");
 $programas = mysqli_query($conexion, "SELECT * FROM programa_formacion");
 
-// Procesar actualización
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = [
         'primer_nombre' => $_POST['primer_nombre'] ?? '',

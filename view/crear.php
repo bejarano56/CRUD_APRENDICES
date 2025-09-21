@@ -8,10 +8,8 @@ $tipos = mysqli_query($conexion, "SELECT * FROM tipo_documento");
 $grupos = mysqli_query($conexion, "SELECT * FROM grupo_sanguineo");
 $programas = mysqli_query($conexion, "SELECT * FROM programa_formacion");
 
-// Si el formulario fue enviado
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $resultado = $controlador->store($_POST);
-    // Redirigir a index.php después de guardar
     header("Location: ../index.php");
     exit;
 }
