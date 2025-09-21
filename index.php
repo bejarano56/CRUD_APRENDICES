@@ -22,8 +22,16 @@
                         <thead>
                             <tr class="text-center">
                                 <th scope="col">No.</th>
-                                <th scope="col">Nombre</th>
-                                <th scope="col">Edad</th>
+                                <th scope="col">Primer Nombre</th>
+                                <th scope="col">Segundo Nombre</th>
+                                <th scope="col">Primer Apellido</th>
+                                <th scope="col">Segundo Apellido</th>
+                                <th scope="col">Sexo</th>
+                                <th scope="col">Documento</th>
+                                <th scope="col">Tipo de Documento</th>
+                                <th scope="col">Grupo sanguineo</th>
+                                <th scope="col">Programa de formacion</th>
+                                <th scope="col">Ficha</th>
                                 <th colspan="3" scope="col">Opciones</th>
                             </tr>
                         </thead>
