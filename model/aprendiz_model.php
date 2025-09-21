@@ -6,22 +6,25 @@ class AprendizModel {
     private $db;
 
     public function __construct() {
-        // usar la función definida en conexion.php
         $this->db = conectarDB();
     }
 
     public function obtenerTodos() {
-        $sql = "SELECT * FROM aprendices";
-        $resultado = $this->db->query($sql);
-        if (!$resultado) {
-            // debug en desarrollo
-            die("Error en query obtenerTodos: " . $this->db->error);
-        }
-        // convertir a array asociativo
-        $rows = [];
-        while ($r = $resultado->fetch_assoc()) $rows[] = $r;
-        return $rows;
+    $sql = "SELECT a.id, a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido, a.sexo, a.documento, td.tipo_documento, gs.nombre_grupo, pf.nombre_programa, a.ficha
+            FROM aprendices a
+            INNER JOIN tipo_documento td ON a.id_tipo_documento = td.id
+            INNER JOIN grupo_sanguineo gs ON a.id_grupo_sanguineo = gs.id
+            INNER JOIN programa_formacion pf ON a.id_programa = pf.id";
+
+    $resultado = mysqli_query($this->db, $sql); // ← AQUÍ
+    $aprendices = [];
+    while ($row = mysqli_fetch_assoc($resultado)) {
+        $aprendices[] = $row;
     }
+    return $aprendices;
+}
+
+
 
     public function obtenerPorId($id) {
         $sql = "SELECT * FROM aprendices WHERE id = ?";
@@ -42,9 +45,7 @@ class AprendizModel {
         $stmt = $this->db->prepare($sql);
         if (!$stmt) die("Error prepare crear: " . $this->db->error);
 
-        // TIPOS: primer_nombre s, segundo_nombre s, primer_apellido s, segundo_apellido s,
-        // sexo s, documento s, id_tipo_documento i, id_grupo_sanguineo i, id_programa i, ficha s
-        $types = 'ssssssiiis'; // 10 parámetros -> 6 's', 3 'i', 1 's' => 'ssssssiiis'
+        $types = 'ssssssiiis'; 
 
         // Asegúrate de que las keys existan en $datos (o setea valores por defecto)
         $p1 = $datos['primer_nombre'] ?? null;
