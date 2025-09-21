@@ -58,6 +58,12 @@ $resultado = mysqli_query($conexion, $sql);
                 <td><?= $row['nombre_grupo'] ?></td>
                 <td><?= $row['nombre_programa'] ?></td>
                 <td><?= $row['ficha'] ?></td>
+                <td>
+                    <a href="view/editar.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm">Actualizar</a>
+                    <a href="controller/eliminar_aprendiz.php?id=<?= $row['id'] ?>" 
+                    class="btn btn-danger btn-sm"
+                    onclick="return confirm('¿Estás seguro de eliminar este aprendiz?');">Eliminar</a>
+                </td>
             </tr>
         <?php } ?>
         </tbody>
