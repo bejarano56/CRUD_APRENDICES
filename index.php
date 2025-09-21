@@ -15,6 +15,16 @@ $aprendices = $controlador->index();
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
+    <?php if(isset($_GET['msg']) && $_GET['msg'] == 'actualizado'): ?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Actualizado!',
+        text: 'El aprendiz ha sido actualizado correctamente'
+    });
+</script>
+<?php endif; ?>
 <div class="container mt-4">
     <h1 class="text-center">Lista de Aprendices</h1>
 
@@ -66,7 +76,6 @@ $aprendices = $controlador->index();
 </div>
 
 <script>
-// Función para SweetAlert
 function confirmarEliminar(id) {
     Swal.fire({
         title: '¿Estás seguro?',

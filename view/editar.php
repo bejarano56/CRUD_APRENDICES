@@ -1,54 +1,149 @@
 <?php
+require_once '../controller/aprendiz_controller.php';
+require_once '../database/conexion.php';
 
-include 'conexion.php';
-$id = $_GET['id'];
-$sql = "SELECT * FROM aprendices WHERE id = $id";
-$resultado = mysqli_query($conexion, $sql);
-$row = mysqli_fetch_array($resultado);
-$nombre = $row['nombre'];
-$fecha_nacimiento = $row['fecha_nacimiento'];
+$controlador = new AprendizController();
 
+$id = $_GET['id'] ?? null;
+if (!$id) die("ID de aprendiz no proporcionado");
+
+$aprendiz = $controlador->show($id);
+
+if (!$aprendiz) die("Aprendiz no encontrado");
+
+// Traer datos para selects
+$conexion = conectarDB();
+$tipos = mysqli_query($conexion, "SELECT * FROM tipo_documento");
+$grupos = mysqli_query($conexion, "SELECT * FROM grupo_sanguineo");
+$programas = mysqli_query($conexion, "SELECT * FROM programa_formacion");
+
+// Procesar actualización
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $data = [
+        'primer_nombre' => $_POST['primer_nombre'] ?? '',
+        'segundo_nombre' => $_POST['segundo_nombre'] ?? '',
+        'primer_apellido' => $_POST['primer_apellido'] ?? '',
+        'segundo_apellido' => $_POST['segundo_apellido'] ?? '',
+        'sexo' => $_POST['sexo'] ?? '',
+        'documento' => $_POST['documento'] ?? '',
+        'id_tipo_documento' => $_POST['id_tipo_documento'] ?? null,
+        'id_grupo_sanguineo' => $_POST['id_grupo_sanguineo'] ?? null,
+        'id_programa' => $_POST['id_programa'] ?? null,
+        'ficha' => $_POST['ficha'] ?? '',
+    ];
+
+    $ok = $controlador->update($id, $data);
+    if ($ok) {
+        header('Location: ../index.php?msg=actualizado');
+        exit;
+    } else {
+        $error = "Error al actualizar el aprendiz.";
+    }
+}
 ?>
 
 <!doctype html>
 <html lang="es">
-
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SENA || Edit </title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <title>Editar Aprendiz</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
 <body>
-    <div class="container">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col">
-                    <h1>Editar Aprendiz</h1>
-                    <form action="update.php" method="post">
-                        <div class="mb-3">
-                            <label for="id" class="form-label">ID</label>
-                            <input type="text" class="form-control" id="id" name="id" value="<?php echo $id; ?>" readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label for="nombre" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo $nombre; ?>">
-                        </div>
-                        <div class="mb-3">
-                            <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
-                            <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" value="<?php echo $fecha_nacimiento; ?>">
-                        </div>
-                        <button type="submit" class="btn btn-primary">Actualizar</button>
-                    </form>
-                </div>
-            </div>
+<div class="container mt-4">
+    <h1>Editar Aprendiz</h1>
+    <?php if (!empty($error)) : ?>
+        <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
+    <?php endif; ?>
+
+    <form action="" method="post" class="row g-3">
+
+        <div class="col-md-6">
+            <label class="form-label">Primer Nombre</label>
+            <input type="text" name="primer_nombre" class="form-control" required
+                value="<?= htmlspecialchars((string)($aprendiz['primer_nombre'] ?? '')) ?>">
         </div>
-    </div>
 
+        <div class="col-md-6">
+            <label class="form-label">Segundo Nombre</label>
+            <input type="text" name="segundo_nombre" class="form-control"
+                value="<?= htmlspecialchars((string)($aprendiz['segundo_nombre'] ?? '')) ?>">
+        </div>
 
+        <div class="col-md-6">
+            <label class="form-label">Primer Apellido</label>
+            <input type="text" name="primer_apellido" class="form-control" required
+                value="<?= htmlspecialchars((string)($aprendiz['primer_apellido'] ?? '')) ?>">
+        </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
+        <div class="col-md-6">
+            <label class="form-label">Segundo Apellido</label>
+            <input type="text" name="segundo_apellido" class="form-control"
+                value="<?= htmlspecialchars((string)($aprendiz['segundo_apellido'] ?? '')) ?>">
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Sexo</label>
+            <select name="sexo" class="form-select" required>
+                <option value="">Seleccione</option>
+                <option value="masculino" <?= ($aprendiz['sexo'] ?? '') === 'masculino' ? 'selected' : '' ?>>Masculino</option>
+                <option value="femenino" <?= ($aprendiz['sexo'] ?? '') === 'femenino' ? 'selected' : '' ?>>Femenino</option>
+            </select>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Documento</label>
+            <input type="text" name="documento" class="form-control" required
+                value="<?= htmlspecialchars((string)($aprendiz['documento'] ?? '')) ?>">
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Tipo Documento</label>
+            <select name="id_tipo_documento" class="form-select" required>
+                <option value="">Seleccione</option>
+                <?php mysqli_data_seek($tipos, 0); while ($t = mysqli_fetch_assoc($tipos)) : ?>
+                    <option value="<?= $t['id'] ?>" <?= ($aprendiz['id_tipo_documento'] ?? '') == $t['id'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($t['tipo_documento']) ?>
+                    </option>
+                <?php endwhile; ?>
+            </select>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Grupo Sanguíneo</label>
+            <select name="id_grupo_sanguineo" class="form-select" required>
+                <option value="">Seleccione</option>
+                <?php mysqli_data_seek($grupos, 0); while ($g = mysqli_fetch_assoc($grupos)) : ?>
+                    <option value="<?= $g['id'] ?>" <?= ($aprendiz['id_grupo_sanguineo'] ?? '') == $g['id'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($g['nombre_grupo']) ?>
+                    </option>
+                <?php endwhile; ?>
+            </select>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Programa</label>
+            <select name="id_programa" class="form-select" required>
+                <option value="">Seleccione</option>
+                <?php mysqli_data_seek($programas, 0); while ($p = mysqli_fetch_assoc($programas)) : ?>
+                    <option value="<?= $p['id'] ?>" <?= ($aprendiz['id_programa'] ?? '') == $p['id'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($p['nombre_programa']) ?>
+                    </option>
+                <?php endwhile; ?>
+            </select>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Ficha</label>
+            <input type="text" name="ficha" class="form-control" required
+                value="<?= htmlspecialchars((string)($aprendiz['ficha'] ?? '')) ?>">
+        </div>
+
+        <div class="col-12">
+            <button type="submit" class="btn btn-success">Actualizar</button>
+            <a href="../index.php" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
 </body>
-
 </html>

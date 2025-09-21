@@ -27,16 +27,28 @@ class AprendizModel {
 
 
     public function obtenerPorId($id) {
-        $sql = "SELECT * FROM aprendices WHERE id = ?";
-        $stmt = $this->db->prepare($sql);
-        if (!$stmt) die("Error prepare obtenerPorId: " . $this->db->error);
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $res = $stmt->get_result();
-        $row = $res->fetch_assoc();
-        $stmt->close();
-        return $row;
+    $sql = "SELECT a.*, td.tipo_documento, gs.nombre_grupo, pf.nombre_programa
+            FROM aprendices a
+            INNER JOIN tipo_documento td ON a.id_tipo_documento = td.id
+            INNER JOIN grupo_sanguineo gs ON a.id_grupo_sanguineo = gs.id
+            INNER JOIN programa_formacion pf ON a.id_programa = pf.id
+            WHERE a.id = ?";
+
+    $stmt = $this->db->prepare($sql);
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    $row = $res->fetch_assoc();
+    $stmt->close();
+
+    if (isset($row['Documento'])) {
+        $row['documento'] = $row['Documento'];
+        unset($row['Documento']);
     }
+
+    return $row;
+}
+
 
     public function crear($datos) {
         $sql = "INSERT INTO aprendices 
@@ -47,7 +59,6 @@ class AprendizModel {
 
         $types = 'ssssssiiis'; 
 
-        // Asegúrate de que las keys existan en $datos (o setea valores por defecto)
         $p1 = $datos['primer_nombre'] ?? null;
         $p2 = $datos['segundo_nombre'] ?? null;
         $p3 = $datos['primer_apellido'] ?? null;
@@ -62,7 +73,6 @@ class AprendizModel {
         $stmt->bind_param($types, $p1, $p2, $p3, $p4, $p5, $p6, $p7, $p8, $p9, $p10);
         $ok = $stmt->execute();
         if (!$ok) {
-            // muestra error en desarrollo
             $err = $stmt->error;
             $stmt->close();
             die("Error execute crear: " . $err);
@@ -78,8 +88,7 @@ class AprendizModel {
         $stmt = $this->db->prepare($sql);
         if (!$stmt) die("Error prepare actualizar: " . $this->db->error);
 
-        // mismos tipos de arriba + 'i' para el id al final
-        $types = 'ssssssiiisi'; // 11 parámetros
+        $types = 'ssssssiiisi';
 
         $p1 = $datos['primer_nombre'] ?? null;
         $p2 = $datos['segundo_nombre'] ?? null;
