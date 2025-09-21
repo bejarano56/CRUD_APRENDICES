@@ -1,18 +1,24 @@
 <?php
+// database/conexion.php
+function conectarDB() {
+    $server = "localhost";
+    $database = "prueba_db"; 
+    $usuario = "root";
+    $contrasenia = "";
 
-$server = "localhost";
-$database = "prueba_db";
-$usuario = "root";
-$contrasenia = "";
+    $mysqli = new mysqli($server, $usuario, $contrasenia, $database);
 
-$conexion = mysqli_connect($server, $usuario, $contrasenia, $database);
+    if ($mysqli->connect_errno) {
 
-try {
-    if (!$conexion) {
-        throw new Exception("Error de conexión: " . mysqli_connect_error());
-    } else {
-        // echo "Conexión exitosa a la base de datos.";
+        die("Error de conexión MySQL: " . $mysqli->connect_error);
     }
-} catch (Exception $e) {
-    echo $e->getMessage();
+
+    $mysqli->set_charset('utf8mb4');
+
+    return $mysqli;
+}
+
+if (!isset($conexion) || !$conexion) {
+    $conexion = conectarDB();
+    $GLOBALS['conexion'] = $conexion;
 }

@@ -1,82 +1,67 @@
+<?php
+include 'database/conexion.php';
+
+// Obtener lista de aprendices
+$sql = "SELECT a.id, a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido, 
+               a.sexo, a.documento, td.tipo_documento, gs.nombre_grupo, pf.nombre_programa, a.ficha
+        FROM aprendices a
+        INNER JOIN tipo_documento td ON a.id_tipo_documento = td.id
+        INNER JOIN grupo_sanguineo gs ON a.id_grupo_sanguineo = gs.id
+        INNER JOIN programa_formacion pf ON a.id_programa = pf.id";
+
+$resultado = mysqli_query($conexion, $sql);
+?>
+
 <!doctype html>
 <html lang="es">
-
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SENA || Home</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <title>SENA || Lista de Aprendices</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
 <body>
-    <div class="container">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col">
-                    <h1 class="text-center">Lista de Aprendices</h1>
-                    <div class="text-center mb-3">
-                        <a href="crear.php" class="btn btn-sm btn-primary">Crear Aprendiz</a>
-                    </div>
-
-                    <table class="table table-sm table-hover table-responsive">
-                        <thead>
-                            <tr class="text-center">
-                                <th scope="col">No.</th>
-                                <th scope="col">Primer Nombre</th>
-                                <th scope="col">Segundo Nombre</th>
-                                <th scope="col">Primer Apellido</th>
-                                <th scope="col">Segundo Apellido</th>
-                                <th scope="col">Sexo</th>
-                                <th scope="col">Documento</th>
-                                <th scope="col">Tipo de Documento</th>
-                                <th scope="col">Grupo sanguineo</th>
-                                <th scope="col">Programa de formacion</th>
-                                <th scope="col">Ficha</th>
-                                <th colspan="3" scope="col">Opciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            include 'conexion.php';
-                            $sql = "SELECT * FROM aprendices";
-                            $resultado = mysqli_query($conexion, $sql);
-                            $contador = 1;
-
-                            while ($row = mysqli_fetch_array($resultado)) {
-                                $id = $row['id'];
-                                $nombre = $row['nombre'];
-                                $fecha_nacimiento = $row['fecha_nacimiento'];
-                                $obj = new DateTime($fecha_nacimiento);
-                                $hoy = new DateTime();
-                                $edad = $hoy->diff($obj)->y; // Calcular la edad
-
-                                echo "<tr class='text-center'>";
-                                echo "<th scope='row'>$contador</th>";
-                                echo "<td>$nombre</td>";
-                                echo "<td>$edad años</td>";
-                                echo "<td>";
-                                echo "<a href='ver.php?id=$id&nombre=$nombre' class='btn btn-info btn-sm'>Ver</a>";
-                                echo "</td>";
-                                echo "<td>";
-                                echo "<a href='editar.php?id=$id' class='btn btn-warning btn-sm'>Editar</a>";
-                                echo "</td>";
-                                echo "<td>";
-                                echo "<a href='delete.php?id=$id' class='btn btn-danger btn-sm'>Eliminar</a>";
-                                echo "</td>";
-                                echo "</tr>";
-                                $contador++;
-                            }
-                            mysqli_close($conexion);
-                            ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+<div class="container mt-4">
+    <h1 class="text-center">Lista de Aprendices</h1>
+    <div class="text-center mb-3">
+        <a href="view/crear.php" class="btn btn-primary btn-sm">Crear Aprendiz</a>
     </div>
 
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
+    <table class="table table-bordered table-hover text-center">
+        <thead class="table-dark">
+            <tr>
+                <th>No.</th>
+                <th>Primer Nombre</th>
+                <th>Segundo Nombre</th>
+                <th>Primer Apellido</th>
+                <th>Segundo Apellido</th>
+                <th>Sexo</th>
+                <th>Documento</th>
+                <th>Tipo Documento</th>
+                <th>Grupo Sanguíneo</th>
+                <th>Programa</th>
+                <th>Ficha</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php 
+        $contador = 1;
+        while ($row = mysqli_fetch_assoc($resultado)) { ?>
+            <tr>
+                <td><?= $contador++ ?></td>
+                <td><?= $row['primer_nombre'] ?></td>
+                <td><?= $row['segundo_nombre'] ?></td>
+                <td><?= $row['primer_apellido'] ?></td>
+                <td><?= $row['segundo_apellido'] ?></td>
+                <td><?= $row['sexo'] ?></td>
+                <td><?= $row['documento'] ?></td>
+                <td><?= $row['tipo_documento'] ?></td>
+                <td><?= $row['nombre_grupo'] ?></td>
+                <td><?= $row['nombre_programa'] ?></td>
+                <td><?= $row['ficha'] ?></td>
+            </tr>
+        <?php } ?>
+        </tbody>
+    </table>
+</div>
 </body>
-
 </html>
